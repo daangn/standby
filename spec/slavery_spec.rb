@@ -51,6 +51,12 @@ describe Standby do
     end
   end
 
+  it 'ignore error in transaction with optional standby' do
+    User.transaction do
+      expect { Standby.on_optional_standby { User.count } }.to be true
+    end
+  end
+
   it 'disables by configuration' do
     backup = Standby.disabled
 
