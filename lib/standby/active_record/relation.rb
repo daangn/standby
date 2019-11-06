@@ -1,13 +1,13 @@
 module ActiveRecord
   class Relation
-    attr_accessor :standby_target
+    attr_accessor :standby_target, :optional
 
     # Supports queries like User.on_standby.to_a
     alias_method :exec_queries_without_standby, :exec_queries
 
     def exec_queries
       if standby_target
-        Standby.on_standby(standby_target) { exec_queries_without_standby }
+        Standby.on_standby(standby_target, optional) { exec_queries_without_standby }
       else
         exec_queries_without_standby
       end
@@ -19,7 +19,7 @@ module ActiveRecord
 
     def calculate(*args)
       if standby_target
-        Standby.on_standby(standby_target) { calculate_without_standby(*args) }
+        Standby.on_standby(standby_target, optional) { calculate_without_standby(*args) }
       else
         calculate_without_standby(*args)
       end

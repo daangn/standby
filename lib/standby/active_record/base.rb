@@ -18,6 +18,17 @@ module ActiveRecord
         # http://stackoverflow.com/questions/18198963/with-rails-4-model-scoped-is-deprecated-but-model-all-cant-replace-it
         context = where(nil)
         context.standby_target = name || :null_state
+        context.optional = false
+        context
+      end
+
+      # Generate scope at top level e.g. User.on_optional_standby
+      def on_optional_standby(name = :null_state)
+        # Why where(nil)?
+        # http://stackoverflow.com/questions/18198963/with-rails-4-model-scoped-is-deprecated-but-model-all-cant-replace-it
+        context = where(nil)
+        context.standby_target = name || :null_state
+        context.optional = true
         context
       end
     end
