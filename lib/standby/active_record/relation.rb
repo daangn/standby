@@ -7,7 +7,11 @@ module ActiveRecord
 
     def exec_queries
       if standby_target
-        Standby.on_standby(standby_target, optional) { exec_queries_without_standby }
+        if optional
+          Standby.on_optional_standby(standby_target) { exec_queries_without_standby }
+        else
+          Standby.on_standby(standby_target) { exec_queries_without_standby }
+        end
       else
         exec_queries_without_standby
       end
@@ -19,7 +23,11 @@ module ActiveRecord
 
     def calculate(*args)
       if standby_target
-        Standby.on_standby(standby_target, optional) { calculate_without_standby(*args) }
+        if optional
+          Standby.on_optional_standby(standby_target) { calculate_without_standby(*args) }
+        else
+          Standby.on_standby(standby_target) { calculate_without_standby(*args) }
+        end
       else
         calculate_without_standby(*args)
       end
