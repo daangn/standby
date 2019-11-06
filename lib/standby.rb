@@ -22,6 +22,10 @@ module Standby
       Base.new(name).run &block
     end
 
+    def on_optional_standby(name = :null_state, &block)
+      raise Standby::Error.new('invalid standby target') unless name.is_a?(Symbol)
+      Base.new(name, optional: true).run &block
+
     def on_primary(&block)
       Base.new(:primary).run &block
     end
