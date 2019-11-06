@@ -1,14 +1,18 @@
 module Standby
   class Base
-    def initialize(target)
-      @target = decide_with(target)
+    def initialize(target, optional: false)
+      if optional
+        @target = decide_with_optional(target)
+      else
+        @target = decide_with(target)
+      end
     end
 
     def run(&block)
       run_on @target, &block
     end
 
-  private
+    private
 
     def decide_with(target)
       if Standby.disabled || target == :primary
@@ -25,6 +29,18 @@ module Standby
         "standby_#{target}".to_sym
       else
         raise Standby::Error.new('on_standby cannot be used with a nil target!')
+      end
+    end
+
+    def decide_with_optional(target)
+      if Standby.disabled || target == :primary || inside_transaction?
+        :primary
+      elsif target == :null_state
+        :standby
+      elsif target.present?
+        "standby_#{target}".to_sym
+      else
+        raise Standby::Error.new('on_optional_standby cannot be used with a nil target!')
       end
     end
 
