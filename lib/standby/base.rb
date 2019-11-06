@@ -14,8 +14,12 @@ module Standby
       if Standby.disabled || target == :primary
         :primary
       elsif inside_transaction?
-        raise Standby::Error.new('on_standby cannot be used inside transaction block!')
-      elsif target == :null_state
+        if target == :optional
+          :primary
+        else
+          raise Standby::Error.new('on_standby cannot be used inside transaction block!')
+        end
+      elsif target == :null_state || target == :optional
         :standby
       elsif target.present?
         "standby_#{target}".to_sym
