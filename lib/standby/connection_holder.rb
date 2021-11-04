@@ -2,6 +2,8 @@ module Standby
   class ConnectionHolder < ActiveRecord::Base
     self.abstract_class = true
 
+    CONNECTION_NAME_MAP = {"StandbyStandbyConnectionHolder" => "ActiveRecord::Base", "StandbyStandbyUserdbConnectionHolder" => "MysqlRecord"}
+
     class << self
       # for delayed activation
       def activate(target)
@@ -9,6 +11,10 @@ module Standby
         spec = ActiveRecord::Base.configurations.configs_for(env_name: env_name, name: target.to_s, include_replicas: true)&.configuration_hash
         raise Error.new("Standby target '#{target}' is invalid!") if spec.nil?
         establish_connection spec
+      end
+
+      def name
+        CONNECTION_NAME_MAP[super] || "ActiveRecord::Base"
       end
     end
   end
