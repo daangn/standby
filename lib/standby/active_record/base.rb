@@ -16,6 +16,7 @@ module ActiveRecord
       def on_standby(name = :null_state)
         # Why where(nil)?
         # http://stackoverflow.com/questions/18198963/with-rails-4-model-scoped-is-deprecated-but-model-all-cant-replace-it
+        name = :userdb if user_db?
         context = where(nil)
         context.standby_target = name || :null_state
         context.optional = false
@@ -27,9 +28,14 @@ module ActiveRecord
         # Why where(nil)?
         # http://stackoverflow.com/questions/18198963/with-rails-4-model-scoped-is-deprecated-but-model-all-cant-replace-it
         context = where(nil)
+        name = :userdb if user_db?
         context.standby_target = name || :null_state
         context.optional = true
         context
+      end
+
+      def user_db?
+        connection_config[:database] == "hoian_user"
       end
     end
   end
