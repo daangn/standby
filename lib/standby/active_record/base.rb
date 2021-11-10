@@ -35,7 +35,7 @@ module ActiveRecord
       end
 
       def user_db?
-        connection_config[:database] == "hoian_user"
+        connection_db_config.database == "hoian_user"
       end
     end
   end
