@@ -6,7 +6,7 @@ module Standby
       # for delayed activation
       def activate(target)
         env_name = ActiveRecord::ConnectionHandling::RAILS_ENV.call
-        spec = ActiveRecord::Base.configurations.configs_for(env_name: env_name, name: target.to_s, include_replicas: true)&.configuration_hash
+        spec = ActiveRecord::Base.configurations.configs_for(env_name: env_name, name: target.to_s, include_hidden: true)&.configuration_hash
         raise Error.new("Standby target '#{target}' is invalid!") if spec.nil?
         establish_connection spec
       end
